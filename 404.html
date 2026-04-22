@@ -1,0 +1,31 @@
+---
+layout: default
+title: Index of /
+permalink: /404.html
+---
+
+<h1>Index of /</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Last modified</th>
+      <th>Size</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="/">Parent Directory</a></td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+    {% for file in site.static_files %}
+      <tr>
+        <td><a href="{{ file.path }}">{{ file.name }}</a></td>
+        <td>{{ file.modified_time | date: "%Y-%m-%d %H:%M" }}</td>
+        <td>{{ file.size }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
