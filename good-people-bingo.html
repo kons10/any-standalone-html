@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健全人BINGO</title>
+    <link href="./style.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style id="tail">
+/*! tailwindcss v4.2.4 | MIT License | https://tailwindcss.com */
+@layer properties;
+@layer theme, base, components, utilities;
+@layer theme {
+  :root, :host {
+    --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+    --color-white: #fff;
+    --spacing: 0.25rem;
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
+    --text-lg: 1.125rem;
+    --text-lg--line-height: calc(1.75 / 1.125);
+    --font-weight-bold: 700;
+    --default-transition-duration: 150ms;
+    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    --default-font-family: var(--font-sans);
+    --default-mono-font-family: var(--font-mono);
+  }
+}
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+  }
+  html, :host {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: var(--default-font-family, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji');
+    font-feature-settings: var(--default-font-feature-settings, normal);
+    font-variation-settings: var(--default-font-variation-settings, normal);
+    -webkit-tap-highlight-color: transparent;
+  }
+  hr {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+  }
+  abbr:where([title]) {
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline dotted;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+  a {
+    color: inherit;
+    -webkit-text-decoration: inherit;
+    text-decoration: inherit;
+  }
+  b, strong {
+    font-weight: bolder;
+  }
+  code, kbd, samp, pre {
+    font-family: var(--default-mono-font-family, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace);
+    font-feature-settings: var(--default-mono-font-feature-settings, normal);
+    font-variation-settings: var(--default-mono-font-variation-settings, normal);
+    font-size: 1em;
+  }
+  small {
+    font-size: 80%;
+  }
+  sub, sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+  sub {
+    bottom: -0.25em;
+  }
+  sup {
+    top: -0.5em;
+  }
+  table {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+  :-moz-focusring {
+    outline: auto;
+  }
+  progress {
+    vertical-align: baseline;
+  }
+  summary {
+    display: list-item;
+  }
+  ol, ul, menu {
+    list-style: none;
+  }
+  img, svg, video, canvas, audio, iframe, embed, object {
+    display: block;
+    vertical-align: middle;
+  }
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+  button, input, select, optgroup, textarea, ::file-selector-button {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    border-radius: 0;
+    background-color: transparent;
+    opacity: 1;
+  }
+  :where(select:is([multiple], [size])) optgroup {
+    font-weight: bolder;
+  }
+  :where(select:is([multiple], [size])) optgroup option {
+    padding-inline-start: 20px;
+  }
+  ::file-selector-button {
+    margin-inline-end: 4px;
+  }
+  ::placeholder {
+    opacity: 1;
+  }
+  @supports (not (-webkit-appearance: -apple-pay-button))  or (contain-intrinsic-size: 1px) {
+    ::placeholder {
+      color: currentcolor;
+      @supports (color: color-mix(in lab, red, red)) {
+        color: color-mix(in oklab, currentcolor 50%, transparent);
+      }
+    }
+  }
+  textarea {
+    resize: vertical;
+  }
+  ::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+  ::-webkit-date-and-time-value {
+    min-height: 1lh;
+    text-align: inherit;
+  }
+  ::-webkit-datetime-edit {
+    display: inline-flex;
+  }
+  ::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+  ::-webkit-datetime-edit, ::-webkit-datetime-edit-year-field, ::-webkit-datetime-edit-month-field, ::-webkit-datetime-edit-day-field, ::-webkit-datetime-edit-hour-field, ::-webkit-datetime-edit-minute-field, ::-webkit-datetime-edit-second-field, ::-webkit-datetime-edit-millisecond-field, ::-webkit-datetime-edit-meridiem-field {
+    padding-block: 0;
+  }
+  ::-webkit-calendar-picker-indicator {
+    line-height: 1;
+  }
+  :-moz-ui-invalid {
+    box-shadow: none;
+  }
+  button, input:where([type='button'], [type='reset'], [type='submit']), ::file-selector-button {
+    appearance: button;
+  }
+  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+    height: auto;
+  }
+  [hidden]:where(:not([hidden='until-found'])) {
+    display: none !important;
+  }
+}
+@layer utilities {
+  .mt-6 {
+    margin-top: calc(var(--spacing) * 6);
+  }
+  .mb-4 {
+    margin-bottom: calc(var(--spacing) * 4);
+  }
+  .flex {
+    display: flex;
+  }
+  .grid {
+    display: grid;
+  }
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
+  .border {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+  }
+  .px-8 {
+    padding-inline: calc(var(--spacing) * 8);
+  }
+  .py-2 {
+    padding-block: calc(var(--spacing) * 2);
+  }
+  .text-center {
+    text-align: center;
+  }
+  .text-lg {
+    font-size: var(--text-lg);
+    line-height: var(--tw-leading, var(--text-lg--line-height));
+  }
+  .text-sm {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+  }
+  .font-bold {
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
+  }
+  .text-white {
+    color: var(--color-white);
+  }
+  .opacity-80 {
+    opacity: 80%;
+  }
+  .transition {
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-border-style: solid;
+      --tw-font-weight: initial;
+    }
+  }
+}
+</style>
+    <style id="self">
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Serif+SC:wght@400;700&display=swap');
+
+        :root {
+            --bingo-font: 'Noto Sans JP', 'Noto Sans SC', sans-serif;
+        }
+
+        body {
+            font-family: var(--bingo-font);
+            background-color: #f3f4f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* 画像生成用の隠しエリアではなく表示用 */
+        #capture-area {
+            background-color: white;
+            padding: 40px;
+            width: 800px;
+            box-sizing: border-box;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .bingo-container {
+            width: 100%;
+            background: white;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.15em;
+            color: black;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            border-bottom: 2px solid black;
+            padding-bottom: 12px;
+            margin-bottom: 25px;
+            color: black;
+        }
+
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            border: 2.5px solid black;
+        }
+
+        .bingo-cell {
+            aspect-ratio: 1 / 1;
+            border: 1px solid black;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            cursor: pointer;
+            user-select: none;
+            word-break: break-all;
+            position: relative;
+            background: white;
+            color: black;
+        }
+
+        /* 印（○）の表現 */
+        .bingo-cell.marked::after {
+            content: "";
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            border: 4px solid rgba(239, 68, 68, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1.2rem;
+            font-style: italic;
+            border-bottom: 1.5px solid #000;
+            display: inline-block;
+            width: 100%;
+            padding-bottom: 8px;
+            color: black;
+        }
+
+        /* プレビュー用モーダル */
+        #preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        #preview-image {
+            max-width: 90%;
+            max-height: 80%;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            background: white;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: 1px solid #374151;
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #f3f4f6;
+        }
+
+        button.active {
+            background: #1f2937;
+            color: white;
+        }
+
+        .primary-btn {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+        }
+
+        .primary-btn:hover {
+            background-color: #2563eb;
+        }
+
+        @media (max-width: 800px) {
+            #capture-area { width: 95vw; padding: 15px; }
+            .title { font-size: 1.8rem; }
+            .subtitle { font-size: 0.75rem; }
+            .bingo-cell { font-size: 0.65rem; padding: 4px; }
+            .footer { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls no-print">
+        <button onclick="changeLang('zh')" id="btn-zh" class="active">中文 (Original)</button>
+        <button onclick="changeLang('ja')" id="btn-ja">日本語</button>
+        <button onclick="changeLang('en')" id="btn-en">English</button>
+        <button onclick="showPreview()" class="primary-btn">画像プレビューを表示</button>
+        <button onclick="resetBoard()">リセット</button>
+    </div>
+
+    <!-- 編集・表示エリア -->
+    <div id="capture-area">
+        <div class="bingo-container">
+            <div class="title" id="display-title">健全人BINGO</div>
+            <div class="subtitle" id="display-subtitle">（如果五个連成一條線，那麼恭喜你，你是現在偏少見的健全人）</div>
+
+            <div class="bingo-grid" id="grid"></div>
+
+            <div class="footer" id="display-footer">
+                （即使不是健全人，又活了一天，真棒！）
+            </div>
+        </div>
+    </div>
+
+    <!-- プレビュー用モーダル -->
+    <div id="preview-modal">
+        <div class="text-white mb-4 text-center">
+            <p class="text-lg font-bold">画像プレビュー</p>
+            <p class="text-sm opacity-80">画像を長押し、または右クリックで保存してね</p>
+        </div>
+        <img id="preview-image" src="" alt="Bingo Preview">
+        <div class="mt-6">
+            <button onclick="closePreview()" class="px-8 py-2">閉じる</button>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            zh: {
+                title: "健全人BINGO",
+                subtitle: "（如果五个連成一條線，那麼恭喜你，你是現在偏少見的健全人）",
+                footer: "（即使不是健全人，又活了一天，真棒！）",
+                items: [
+                    "沒有先天重大疾病或身體缺陷", "沒有負債與過量超前消費行為", "對人生有規劃且有執行的精力", "性格外傾或總能在外保持舒展", "有愛自己的人或能深度共鳴的摯友",
+                    "沒有或極少關注自己幸不幸幅", "無失眠、早醒等睡眠障礙", "沒有藥物濫用行為(od)", "能夠做到每天出門", "不長期處於過勞與身體透支狀態",
+                    "沒有過自殘行為與自毀傾向", "沒有外貌焦慮、體重焦慮", "無暴食與催吐等進食障礙行為", "有兩個以上能隨時說上話的好朋友", "有多個愛好並能為愛好消費",
+                    "非單親家庭及無至親去世", "較少驚恐，不每次衝突中都想到直奔毀滅", "沒有酒精與香煙依賴", "沒有過休學與退學經歷", "無頭疼胃疼等焦慮軀體化症狀",
+                    "無父母家暴無學校霸凌", "能靠自己工作努力養活自己", "沒有確診過任何心理疾病", "無鏡頭恐懼相冊裡有很多本人照片", "沒有明顯的創傷經歷與CPTSD"
+                ]
+            },
+            ja: {
+                title: "健全人ビンゴ",
+                subtitle: "（5つ並んだらおめでとう、君は現代では珍しい「健全な人」だよ）",
+                footer: "（健全じゃなくても、今日も一日生きた。偉い！）",
+                items: [
+                    "先天的な重大疾患や身体的欠陥がない", "借金や過度な浪費習慣がない", "人生に計画があり、実行する気力がある", "外向的、または人前で常にリラックスできる", "自分を愛してくれる人や深く共鳴できる親友がいる",
+                    "自分が幸せか不幸せかをほとんど気にしない", "不眠や早朝覚醒などの睡眠障害がない", "薬物濫用（オーバードーズ等）がない", "毎日外出することができる", "長期的な過労や身体の酷使状態にない",
+                    "自傷行為や自暴自棄な傾向がない", "外見や体重に対する強い不安がない", "過食や嘔吐などの摂食障害がない", "いつでも話せる親友が2人以上いる", "複数の趣味があり、そのためにお金を使える",
+                    "ひとり親家庭ではなく、近親者の死去を経験していない", "パニックになりにくく、衝突時にすぐ破滅を考えない", "アルコールやタバコへの依存がない", "休学や退学の経験がない", "頭痛や腹痛などの不安による身体化症状がない",
+                    "家庭内暴力や学校でのいじめを経験していない", "自分の仕事と努力で自立して生活できている", "精神疾患の診断を受けたことがない", "カメラ恐怖症がなく、アルバムに自分の写真が多い", "明らかなトラウマ体験やCPTSDがない"
+                ]
+            },
+            en: {
+                title: "Healthy Person BINGO",
+                subtitle: "(If you get five in a row, congrats! You are a rare 'healthy person' today.)",
+                footer: "(Even if you aren't, you survived another day. Awesome!)",
+                items: [
+                    "No congenital major diseases or physical defects", "No debt or excessive overspending", "Has life plans and energy to execute them", "Extroverted or always relaxed in public", "Has people who love them or soulmates",
+                    "Rarely obsessed with their own happiness", "No sleep disorders like insomnia", "No history of drug abuse (OD)", "Able to go out every day", "Not chronically overworked or exhausted",
+                    "No history of self-harm or self-destructive tendencies", "No appearance or weight anxiety", "No eating disorders (binging/purging)", "At least 2 friends to talk to anytime", "Multiple hobbies and can spend on them",
+                    "Not from a single-parent home; no loss of immediate family", "Few panics; doesn't jump to 'destruction' during conflict", "No dependence on alcohol or cigarettes", "No history of dropping out or leave of absence", "No somatization (headaches/stomachaches from anxiety)",
+                    "No domestic violence or school bullying", "Able to support oneself through work", "Never diagnosed with a mental illness", "No camera shyness; many photos of self in album", "No significant trauma history or CPTSD"
+                ]
+            }
+        };
+
+        let currentLang = 'zh';
+        const markedCells = new Set();
+
+        function initGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            translations[currentLang].items.forEach((text, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'bingo-cell';
+                if (markedCells.has(index)) cell.classList.add('marked');
+                cell.innerText = text;
+                cell.onclick = () => toggleMark(index, cell);
+                grid.appendChild(cell);
+            });
+        }
+
+        function toggleMark(index, element) {
+            if (markedCells.has(index)) {
+                markedCells.delete(index);
+                element.classList.remove('marked');
+            } else {
+                markedCells.add(index);
+                element.classList.add('marked');
+            }
+        }
+
+        function changeLang(lang) {
+            currentLang = lang;
+            document.getElementById('display-title').innerText = translations[lang].title;
+            document.getElementById('display-subtitle').innerText = translations[lang].subtitle;
+            document.getElementById('display-footer').innerText = translations[lang].footer;
+            
+            ['zh', 'ja', 'en'].forEach(l => {
+                document.getElementById(`btn-${l}`).classList.toggle('active', l === lang);
+            });
+
+            initGrid();
+        }
+
+        function resetBoard() {
+            markedCells.clear();
+            initGrid();
+        }
+
+        // 画像プレビューを表示する関数
+        async function showPreview() {
+            const area = document.getElementById('capture-area');
+            const modal = document.getElementById('preview-modal');
+            const previewImg = document.getElementById('preview-image');
+
+            // html2canvasでキャプチャ
+            const canvas = await html2canvas(area, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: "#ffffff"
+            });
+            
+            previewImg.src = canvas.toDataURL('image/png');
+            modal.style.display = 'flex';
+        }
+
+        function closePreview() {
+            document.getElementById('preview-modal').style.display = 'none';
+        }
+
+        window.onload = initGrid;
+    </script>
+</body>
+</html>
