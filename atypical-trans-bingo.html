@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>atypical trans Bingo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style id="tail">
+@layer theme, base, components, utilities;
+@layer theme {
+  :root, :host {
+    --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --color-white: #fff;
+    --spacing: 0.25rem;
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
+    --text-lg: 1.125rem;
+    --text-lg--line-height: calc(1.75 / 1.125);
+    --font-weight-bold: 700;
+    --default-transition-duration: 150ms;
+    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    --default-font-family: var(--font-sans);
+    --default-mono-font-family: var(--font-mono);
+  }
+}
+@layer base {
+  *, ::after, ::before { box-sizing: border-box; margin: 0; padding: 0; border: 0 solid; }
+  html { line-height: 1.5; -webkit-text-size-adjust: 100%; font-family: var(--default-font-family); }
+  button { cursor: pointer; }
+}
+@layer utilities {
+  .mt-6 { margin-top: calc(var(--spacing) * 6); }
+  .mb-4 { margin-bottom: calc(var(--spacing) * 4); }
+  .flex { display: flex; }
+  .grid { display: grid; }
+  .text-center { text-align: center; }
+  .text-white { color: var(--color-white); }
+  .font-bold { font-weight: var(--font-weight-bold); }
+  .opacity-80 { opacity: 80%; }
+}
+    </style>
+    <style id="self">
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap');
+
+        :root {
+            --bingo-font: 'Noto Sans JP', 'Noto Sans SC', sans-serif;
+        }
+
+        body {
+            font-family: var(--bingo-font);
+            background-color: #f9fafb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        #capture-area {
+            background-color: white;
+            padding: 40px;
+            width: 800px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #111827;
+        }
+
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            border: 2px solid #000;
+        }
+
+        .bingo-cell {
+            aspect-ratio: 1 / 1;
+            border: 1px solid #000;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.85rem;
+            line-height: 1.3;
+            cursor: pointer;
+            user-select: none;
+            word-break: break-all;
+            position: relative;
+            background: white;
+            color: #000;
+        }
+
+        .bingo-cell.marked::after {
+            content: "";
+            position: absolute;
+            width: 75%;
+            height: 75%;
+            border: 8px solid rgba(59, 130, 246, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        #preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        #preview-image {
+            max-width: 95%;
+            max-height: 75%;
+            background: white;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            background: white;
+            font-size: 0.875rem;
+            border-radius: 6px;
+        }
+
+        .btn.active {
+            background: #1f2937;
+            color: white;
+            border-color: #1f2937;
+        }
+
+        .primary-btn {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+        }
+
+        @media (max-width: 800px) {
+            #capture-area { width: 100%; padding: 15px; }
+            .title { font-size: 1.5rem; }
+            .bingo-cell { font-size: 0.65rem; padding: 4px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <button onclick="changeLang('zh')" id="btn-zh" class="btn active">中文</button>
+        <button onclick="changeLang('ja')" id="btn-ja" class="btn">日本語</button>
+        <button onclick="showPreview()" class="btn primary-btn">画像を生成</button>
+        <button onclick="resetBoard()" class="btn">リセット</button>
+    </div>
+
+    <div id="capture-area">
+        <div class="title" id="display-title">非典型trans Bingo</div>
+        <div class="bingo-grid" id="grid"></div>
+        <div style="text-align: right; margin-top: 10px; font-size: 0.8rem; color: #6b7280;">
+            atypical-trans-bingo-web
+        </div>
+    </div>
+
+    <div id="preview-modal">
+        <div class="text-white mb-4 text-center">
+            <p class="font-bold">画像プレビュー</p>
+            <p class="opacity-80">長押し、または右クリックで保存してください</p>
+        </div>
+        <img id="preview-image" src="" alt="Bingo Preview">
+        <div class="mt-6">
+            <button onclick="closePreview()" class="btn">閉じる</button>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            zh: {
+                title: "非典型trans Bingo",
+                items: [
+                    "不符合trans刻板印象并且认为这些刻板印象不能代表所有trans", "以OAU为代表的进步势力不能代表全体trans", "顺直对trans社群误解应当逐渐化解而不是一棒打死", "trans资源wiki应当开放自由编辑不应设立审查", "家长党的话语权过高使外界忽视家暴党的问题",
+                    "支持牧鸢与亚明", "开放式关系很难做到一视同仁", "不认为ftm比mtf更好pass", "二元trans歧视非二元", "认为trans社群存在阶级差异",
+                    "简中社群对ftm/ftx支持有限", "存在抽象魔怔人士败坏外界对社群形象", "最终目标是脱跨入顺", "二元trans", "你觉得做这张图的我是一个三好跨",
+                    "存在什么也不做却要抢救助功劳的kol", "计科专业trans可见度过于高了影响其他专业trans话语权", "很多自称tradwife的mtf实际很难真正符合定義", "反对od", "kol的意见影响了很多trans并且模仿",
+                    "认为清蒸协会存在具有一定合理性", "只有具体受到与trans有关威胁才可向他国以trans理由寻求庇护", "承认社群救助资源分配不公", "跨性别救助以让人恢复自由为先", "认为社群内斗存在并且消耗大量对外斗争的精力"
+                ]
+            },
+            ja: {
+                title: "非典型トランス Bingo",
+                items: [
+                    "トランスのステレオタイプに当てはまらず、それらが全てのトランスを代表するものではないと考える", "OAUに代表される進歩的勢力は、トランス全体を代表しているわけではない", "マジョリティ（シスヘテロ）の誤解は徐々に解消すべきであり、全否定すべきではない", "トランス資源wikiは自由に編集されるべきで、検閲を設けるべきではない", "「親の権利」を主張する側の声が大きすぎて、家庭内暴力の問題が軽視されている",
+                    "牧鳶と亜明を支持する", "オープンな関係（ポリアモリー等）で全員を平等に扱うのは難しい", "FTMがMTFよりパスしやすい（埋没しやすい）とは限らないと思う", "バイナリー（性別二元論）のトランスがノンバイナリーを差別している", "トランスコミュニティ内に階級格差が存在すると感じる",
+                    "簡体字圏コミュニティのFTM/FTXへの支援は限られている", "過激で奇抜な言動をする人々がコミュニティの対外的なイメージを損なっている", "最終的な目標は、トランスであることを脱して「シス」として生きることだ", "自分はバイナリー（性別二元論的）なトランスだ", "このビンゴを作った人は「非の打ち所がないトランス（三好跨）」だと思う",
+                    "何もしないのに救助の功績だけを奪おうとするインフルエンサー（KOL）がいる", "情報科学（CS）系のトランスの可視性が高すぎて、他分野のトランスの声が届きにくい", "「伝統的な妻（Tradwife）」を自称するMTFは、実際にはその定義に当てはまりにくい", "OD（薬物濫用）に反対する", "インフルエンサーの意見が多くのトランスに影響を与え、模倣されている",
+                    "清蒸協会（Qingzheng Association）の存在には一定の合理性があると思う", "トランスに関連する具体的な脅威があって初めて、他国へ保護（難民申請等）を求めるべきだ", "コミュニティ内の救助リソースの分配が不公平であることを認める", "トランスジェンダー支援は、本人が自由を取り戻すことを最優先すべきだ", "内輪揉めが存在し、対外的な活動のためのエネルギーを浪費していると感じる"
+                ]
+            }
+        };
+
+        let currentLang = 'zh';
+        const markedCells = new Set();
+
+        function initGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            translations[currentLang].items.forEach((text, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'bingo-cell';
+                if (markedCells.has(index)) cell.classList.add('marked');
+                cell.innerText = text;
+                cell.onclick = () => toggleMark(index, cell);
+                grid.appendChild(cell);
+            });
+        }
+
+        function toggleMark(index, element) {
+            if (markedCells.has(index)) {
+                markedCells.delete(index);
+                element.classList.remove('marked');
+            } else {
+                markedCells.add(index);
+                element.classList.add('marked');
+            }
+        }
+
+        function changeLang(lang) {
+            currentLang = lang;
+            document.getElementById('display-title').innerText = translations[lang].title;
+            ['zh', 'ja'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if (btn) btn.classList.toggle('active', l === lang);
+            });
+            initGrid();
+        }
+
+        function resetBoard() {
+            markedCells.clear();
+            initGrid();
+        }
+
+        async function showPreview() {
+            const area = document.getElementById('capture-area');
+            const modal = document.getElementById('preview-modal');
+            const previewImg = document.getElementById('preview-image');
+
+            const canvas = await html2canvas(area, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: "#ffffff"
+            });
+            
+            previewImg.src = canvas.toDataURL('image/png');
+            modal.style.display = 'flex';
+        }
+
+        function closePreview() {
+            document.getElementById('preview-modal').style.display = 'none';
+        }
+
+        window.onload = initGrid;
+    </script>
+</body>
+</html>
