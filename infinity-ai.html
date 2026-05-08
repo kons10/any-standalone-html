@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="color-scheme" content="light dark">
+    <title>Markdown埋め込みコード変換ツール (複数ファイル対応)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            color-scheme: light dark;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background-color: Canvas;
+            color: CanvasText;
+            line-height: 1.5;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: color-mix(in srgb, CanvasText 15%, transparent);
+            border-radius: 40px;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.8rem;
+            font-weight: normal;
+        }
+
+        .sub {
+            color: color-mix(in srgb, CanvasText 70%, transparent);
+            margin-bottom: 2rem;
+            border-left: 3px solid currentColor;
+            padding-left: 1rem;
+        }
+
+        .card {
+            background: color-mix(in srgb, Canvas 97%, CanvasText);
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 0 0 1px color-mix(in srgb, CanvasText 10%, transparent);
+            transition: box-shadow 0.2s;
+        }
+
+        .file-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .file-input-area {
+            flex: 3;
+            min-width: 220px;
+        }
+
+        label {
+            font-weight: 500;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            margin-bottom: 0.3rem;
+            color: color-mix(in srgb, CanvasText 80%, transparent);
+        }
+
+        input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid color-mix(in srgb, CanvasText 30%, transparent);
+            border-radius: 16px;
+            background: Canvas;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        input[type="file"]:hover {
+            border-color: color-mix(in srgb, CanvasText 60%, transparent);
+        }
+
+        button {
+            background: color-mix(in srgb, CanvasText 12%, Canvas);
+            border: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: CanvasText;
+        }
+
+        button.primary {
+            background: color-mix(in srgb, CanvasText 85%, Canvas);
+            color: Canvas;
+            border: none;
+        }
+
+        button.primary:hover {
+            background: color-mix(in srgb, CanvasText 100%, Canvas);
+            transform: scale(0.97);
+        }
+
+        button.danger {
+            background: color-mix(in srgb, #f44336 20%, Canvas);
+            border-color: color-mix(in srgb, #f44336 40%, transparent);
+        }
+
+        button.danger:hover {
+            background: color-mix(in srgb, #f44336 35%, Canvas);
+        }
+
+        button:hover {
+            background: color-mix(in srgb, CanvasText 22%, Canvas);
+            border-color: color-mix(in srgb, CanvasText 40%, transparent);
+        }
+
+        .dropzone {
+            margin-top: 1rem;
+            border: 2px dashed color-mix(in srgb, CanvasText 30%, transparent);
+            border-radius: 28px;
+            padding: 1.2rem;
+            text-align: center;
+            background: color-mix(in srgb, Canvas 98%, transparent);
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .dropzone.drag-over {
+            border-color: #3b82f6;
+            background: color-mix(in srgb, #3b82f6 8%, Canvas);
+        }
+
+        .file-list {
+            margin-top: 1rem;
+            background: color-mix(in srgb, CanvasText 4%, transparent);
+            border-radius: 24px;
+            padding: 0.8rem 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .file-list-title {
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.6rem;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+
+        .file-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .file-tag {
+            background: color-mix(in srgb, CanvasText 10%, Canvas);
+            border-radius: 32px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: monospace;
+        }
+
+        .file-tag button {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            color: color-mix(in srgb, CanvasText 70%, transparent);
+        }
+
+        .file-tag button:hover {
+            background: color-mix(in srgb, #f44336 20%, transparent);
+            color: #f44336;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .output-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .wrap-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: color-mix(in srgb, CanvasText 6%, transparent);
+            padding: 0.3rem 0.9rem;
+            border-radius: 32px;
+            font-size: 0.8rem;
+        }
+
+        .wrap-control input {
+            margin: 0;
+            width: 1.1rem;
+            height: 1.1rem;
+        }
+
+        textarea {
+            width: 100%;
+            font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            padding: 1rem;
+            border-radius: 20px;
+            border: 1px solid color-mix(in srgb, CanvasText 25%, transparent);
+            background: Canvas;
+            color: CanvasText;
+            resize: vertical;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        textarea:focus {
+            border-color: #3b82f6;
+        }
+
+        .status {
+            margin-top: 0.8rem;
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 40px;
+            background: color-mix(in srgb, CanvasText 5%, transparent);
+            display: inline-block;
+        }
+
+        .info-text {
+            font-size: 0.75rem;
+            color: color-mix(in srgb, CanvasText 60%, transparent);
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 2.5rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                margin: 1rem;
+                padding: 0.5rem;
+            }
+            .card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>
+    📦 Markdown埋め込みコード変換 
+    <span class="badge">複数ファイル対応 🗂️</span>
+</h1>
+<div class="sub">複数のファイルを選択 / ドロップ → それぞれを個別のコードブロックとして出力 (```file名 内容```)</div>
+
+<div class="card">
+    <div class="file-panel">
+        <div class="file-input-area">
+            <label>📂 ファイルを選択 (複数可)</label>
+            <input type="file" id="fileSelector" multiple aria-label="変換するファイルを複数選択">
+        </div>
+        <div>
+            <button id="clearButton" class="danger">🗑️ 全クリア</button>
+            <button id="removeLastButton" style="margin-left:0.5rem;">➖ 最後のファイルを削除</button>
+        </div>
+    </div>
+
+    <div id="dropzone" class="dropzone">
+        📁 ここに複数ファイルをドラッグ＆ドロップ (まとめて追加)
+    </div>
+    
+    <!-- 選択中ファイルリスト表示 -->
+    <div id="fileListContainer" class="file-list" style="display: none;">
+        <div class="file-list-title">
+            <span>📎 選択中のファイル</span>
+            <span style="font-size:0.7rem;" id="fileCountBadge">0件</span>
+        </div>
+        <div id="fileItemsList" class="file-items"></div>
+    </div>
+    <div class="info-text" style="margin-top: 12px;">
+        ※ テキストファイル (UTF-8) 推奨。各ファイルごとに ```filename ... ``` ブロックを生成し、連結して出力します。<br>
+        ※ バッククォート衝突回避: 各コードブロック独立してフェンスを調整します。
+    </div>
+</div>
+
+<div class="card">
+    <div class="output-header">
+        <h2>📝 Markdown 出力 (連結ブロック)</h2>
+        <div class="actions">
+            <button id="copyButton" class="primary">📋 コピー</button>
+            <label class="wrap-control">
+                <input type="checkbox" id="lineWrapToggle" aria-label="行を折り返す"> 行を折り返す
+            </label>
+        </div>
+    </div>
+    <textarea id="markdownOutput" readonly rows="16" placeholder="ファイルを選択すると、各ファイルのMarkdownコードブロックが連結表示されます ..."></textarea>
+    <div id="statusMessage" class="status">✅ 準備完了 — 複数ファイルを選択・ドロップしてください</div>
+</div>
+
+<footer>
+    ⚡ 複数ファイル対応: それぞれの内容を ```filename``` 形式で連続出力 | 個別削除・全削除可能
+</footer>
+
+<script>
+    (function() {
+        // DOM 要素
+        const fileInput = document.getElementById('fileSelector');
+        const dropZone = document.getElementById('dropzone');
+        const clearBtn = document.getElementById('clearButton');
+        const removeLastBtn = document.getElementById('removeLastButton');
+        const copyBtn = document.getElementById('copyButton');
+        const outputTextarea = document.getElementById('markdownOutput');
+        const statusDiv = document.getElementById('statusMessage');
+        const wrapToggle = document.getElementById('lineWrapToggle');
+        const fileListContainer = document.getElementById('fileListContainer');
+        const fileItemsList = document.getElementById('fileItemsList');
+        const fileCountBadge = document.getElementById('fileCountBadge');
+
+        // 状態: ファイルオブジェクトの配列 (File オブジェクトを保持)
+        let selectedFiles = [];      // 追加順に保持
+        
+        // 読み込み中フラグや変換中オブジェクト (並列読み込み管理)
+        let pendingReads = 0;
+        // ファイル内容のキャッシュ (ファイル名+最終更新日時？簡易版: ファイル名+サイズ+最終更新でkey)
+        // 今回は都度読み込みで十分、パフォーマンス改善のため変換時だけ全ファイル読み直しではなく、
+        // ファイル追加/削除時にまとめて再変換する方式が簡単。ただし非同期読み込みの状態をユーザにフィードバック
+        
+        // メイン: 現在の selectedFiles 配列をもとに、全ファイルを読み込んでマークダウン連結出力
+        async function regenerateMarkdownFromFiles() {
+            if (selectedFiles.length === 0) {
+                outputTextarea.value = '';
+                updateStatus('📭 ファイルが選択されていません。追加してください。', 'info');
+                return;
+            }
+            
+            updateStatus(`🔄 ${selectedFiles.length}個のファイルを読み込み中...`, 'info');
+            
+            try {
+                // 全ファイルを並列読み込み (逐次でも良いが並列で高速)
+                const readPromises = selectedFiles.map(file => readFileAsTextSafe(file));
+                const contents = await Promise.all(readPromises);
+                
+                // 結果を元にマークダウン連結
+                const markdownParts = [];
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    const file = selectedFiles[i];
+                    const content = contents[i];
+                    if (content.success) {
+                        const block = buildMarkdownCodeBlock(file.name, content.data);
+                        markdownParts.push(block);
+                    } else {
+                        // 読み込み失敗時はエラーブロックを追加
+                        const errorBlock = buildErrorMarkdownBlock(file.name, content.errorMsg);
+                        markdownParts.push(errorBlock);
+                    }
+                }
+                
+                const finalMarkdown = markdownParts.join('\n\n');  // ブロック間に空行を入れて可読性向上
+                outputTextarea.value = finalMarkdown;
+                updateStatus(`✅ 変換完了: ${selectedFiles.length} ファイルのブロックを生成しました。`, 'success');
+            } catch (err) {
+                console.error(err);
+                updateStatus(`❌ 変換処理中に予期せぬエラー: ${err.message}`, 'error');
+            }
+        }
+        
+        // ファイル読み込み Promise (テキスト)
+        function readFileAsTextSafe(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    resolve({ success: true, data: ev.target.result });
+                };
+                reader.onerror = () => {
+                    resolve({ success: false, errorMsg: `読み込みエラー: ファイル形式がサポートされていない可能性があります (${file.name})` });
+                };
+                reader.readAsText(file, 'UTF-8');
+            });
+        }
+        
+        // エラー用のマークダウンブロック (内容が読めなかった場合)
+        function buildErrorMarkdownBlock(filename, errorMsg) {
+            const fence = '```';
+            const errorContent = `// ❌ ファイル読み込みエラー\n// ${errorMsg}`;
+            return `${fence}${filename}\n${errorContent}\n${fence}`;
+        }
+        
+        // **** 核心: 衝突しないフェンス生成 ****
+        function getUniqueFence(content) {
+            if (!content && content !== '') return '```';
+            let fence = '```';
+            while (content.includes(fence) && fence.length < 20) {
+                fence += '`';
+            }
+            return fence;
+        }
+        
+        function buildMarkdownCodeBlock(filename, fileContent) {
+            const safeContent = (fileContent === null || fileContent === undefined) ? '' : String(fileContent);
+            const fence = getUniqueFence(safeContent);
+            const lang = filename.trim() || 'file';
+            let result = `${fence}${lang}\n${safeContent}`;
+            if (!safeContent.endsWith('\n') && safeContent.length > 0) {
+                result += '\n';
+            }
+            result += `${fence}`;
+            return result;
+        }
+        
+        // ファイルリストUI更新
+        function updateFileListUI() {
+            if (selectedFiles.length === 0) {
+                fileListContainer.style.display = 'none';
+                fileCountBadge.textContent = '0件';
+                fileItemsList.innerHTML = '';
+                return;
+            }
+            
+            fileListContainer.style.display = 'block';
+            fileCountBadge.textContent = `${selectedFiles.length}件`;
+            
+            // 各ファイルタグを生成
+            fileItemsList.innerHTML = '';
+            selectedFiles.forEach((file, idx) => {
+                const tag = document.createElement('div');
+                tag.className = 'file-tag';
+                const fileSizeStr = formatFileSize(file.size);
+                tag.innerHTML = `
+                    <span>📄 ${escapeHtml(file.name)} (${fileSizeStr})</span>
+                    <button class="remove-single" data-index="${idx}" title="このファイルを削除">✕</button>
+                `;
+                fileItemsList.appendChild(tag);
+            });
+            
+            // 削除ボタンにイベントを再バインド
+            document.querySelectorAll('.remove-single').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const idx = parseInt(btn.getAttribute('data-index'), 10);
+                    if (!isNaN(idx)) {
+                        removeFileAtIndex(idx);
+                    }
+                });
+            });
+        }
+        
+        // 指定インデックスのファイルを削除
+        function removeFileAtIndex(index) {
+            if (index >= 0 && index < selectedFiles.length) {
+                selectedFiles.splice(index, 1);
+                // ファイル入力欄の同期 (FileListは直接操作できないのでリセット、ユーザビリティ維持のため入力欄クリアしないが、selectedFilesと乖離)
+                // ※ fileInput の value をクリアするとユーザが選択履歴失うので、そのままにするが、完全同期は諦める。代わりに提示。
+                // 別途 '選択中のファイル' リストから削除できればOK
+                updateFileListUI();
+                regenerateMarkdownFromFiles();
+                updateStatus(`🗑️ ファイルを削除しました (残り ${selectedFiles.length} 件)`, 'info');
+                // ファイル入力と紐付けをリセット？ そのままでも良いが、再度ユーザが同ファイルを選ぶときに重複を防ぐ簡単なガードはなし
+            }
+        }
+        
+        function removeLastFile() {
+            if (selectedFiles.length > 0) {
+                selectedFiles.pop();
+                updateFileListUI();
+                regenerateMarkdownFromFiles();
+                updateStatus(`➖ 最後のファイルを削除しました (残り ${selectedFiles.length} 件)`, 'info');
+            } else {
+                updateStatus('⚠️ 削除できるファイルがありません', 'warning');
+            }
+        }
+        
+        function clearAllFiles() {
+            if (selectedFiles.length === 0) {
+                updateStatus('既にファイルは空です', 'info');
+                return;
+            }
+            selectedFiles = [];
+            updateFileListUI();
+            regenerateMarkdownFromFiles();
+            updateStatus('🗑️ 全てのファイルをクリアしました', 'success');
+            // ファイル入力リセット (オプション)
+            fileInput.value = '';
+        }
+        
+        // 新規ファイル群を追加 (重複チェック簡易: 同じ名前+同じサイズなら追加しない？一旦単純追加)
+        function addFiles(newFiles) {
+            if (!newFiles || newFiles.length === 0) return;
+            
+            // Filter: ディレクトリ除外・サイズ0バイトでも追加（ただし警告）
+            const validFiles = Array.from(newFiles).filter(f => f.size !== undefined);
+            if (validFiles.length === 0) return;
+            
+            // 追加前にサイズ警告 (任意: 巨大ファイルの合計チェックなど簡易)
+            let totalSizeAdded = validFiles.reduce((acc, f) => acc + f.size, 0);
+            if (totalSizeAdded > 50 * 1024 * 1024) {
+                updateStatus(`⚠️ 追加ファイル合計サイズが ${(totalSizeAdded / (1024*1024)).toFixed(1)} MB です。大量テキストは処理遅延の可能性があります`, 'warning');
+            }
+            
+            // 既存ファイルと単純に連結 (なぜかユーザが重複を許容する場合もある)
+            selectedFiles.push(...validFiles);
+            updateFileListUI();
+            regenerateMarkdownFromFiles();
+            updateStatus(`➕ ${validFiles.length} ファイルを追加 (合計 ${selectedFiles.length} 件)`, 'success');
+        }
+        
+        // ファイル選択イベント
+        function onFileSelected(event) {
+            const files = event.target.files;
+            if (files && files.length > 0) {
+                addFiles(files);
+            }
+            // 入力フィールドはクリアしない(同じファイル連続選択時に再度 onChange 動くように value リセットしないが問題ない)
+            // ただし、同一ファイルを追加でまた選択すると重複する。それで良しとする
+        }
+        
+        // ドラッグ＆ドロップ
+        function setupDragAndDrop() {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => {
+                dropZone.addEventListener(ev, preventDefaults, false);
+            });
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            ['dragenter', 'dragover'].forEach(ev => {
+                dropZone.addEventListener(ev, () => dropZone.classList.add('drag-over'));
+            });
+            ['dragleave', 'drop'].forEach(ev => {
+                dropZone.addEventListener(ev, () => dropZone.classList.remove('drag-over'));
+            });
+            dropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files && files.length > 0) {
+                    addFiles(files);
+                } else {
+                    updateStatus('ドロップにファイルが含まれていません', 'warning');
+                }
+            });
+        }
+        
+        // コピー機能
+        async function copyToClipboard() {
+            const code = outputTextarea.value;
+            if (!code || code.trim() === '') {
+                updateStatus('📭 コピーする内容がありません。ファイルを追加してください。', 'warning');
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(code);
+                updateStatus('📋 マークダウン連結コードをクリップボードにコピーしました！', 'success');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ コピー完了！';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 1500);
+            } catch (err) {
+                updateStatus('❌ コピーに失敗しました。手動コピーを試してください。', 'error');
+                outputTextarea.select();
+            }
+        }
+        
+        // 折り返しトグル
+        function toggleLineWrap() {
+            if (wrapToggle.checked) {
+                outputTextarea.style.whiteSpace = 'pre-wrap';
+                outputTextarea.style.wordWrap = 'break-word';
+                outputTextarea.wrap = 'soft';
+            } else {
+                outputTextarea.style.whiteSpace = 'pre';
+                outputTextarea.style.wordWrap = 'normal';
+                outputTextarea.wrap = 'off';
+            }
+        }
+        
+        function initWrap() {
+            wrapToggle.checked = true;
+            outputTextarea.style.whiteSpace = 'pre-wrap';
+            outputTextarea.style.wordWrap = 'break-word';
+        }
+        
+        function updateStatus(msg, type = 'info') {
+            statusDiv.textContent = msg;
+            statusDiv.style.background = '';
+            statusDiv.style.borderLeft = '';
+            if (type === 'error') {
+                statusDiv.style.background = 'color-mix(in srgb, #f44336 15%, Canvas)';
+                statusDiv.style.borderLeft = '3px solid #f44336';
+            } else if (type === 'warning') {
+                statusDiv.style.background = 'color-mix(in srgb, #ff9800 15%, Canvas)';
+                statusDiv.style.borderLeft = '3px solid #ff9800';
+            } else if (type === 'success') {
+                statusDiv.style.background = 'color-mix(in srgb, #4caf50 15%, Canvas)';
+                statusDiv.style.borderLeft = '3px solid #4caf50';
+            } else {
+                statusDiv.style.background = 'color-mix(in srgb, CanvasText 5%, transparent)';
+                statusDiv.style.borderLeft = 'none';
+            }
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+        
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+                return c;
+            });
+        }
+        
+        // イベントバインド
+        function bindEvents() {
+            fileInput.addEventListener('change', onFileSelected);
+            clearBtn.addEventListener('click', clearAllFiles);
+            removeLastBtn.addEventListener('click', removeLastFile);
+            copyBtn.addEventListener('click', copyToClipboard);
+            wrapToggle.addEventListener('change', toggleLineWrap);
+        }
+        
+        // 初期化
+        function init() {
+            bindEvents();
+            setupDragAndDrop();
+            initWrap();
+            updateFileListUI();
+            regenerateMarkdownFromFiles(); // 空の状態でクリア
+            updateStatus('✨ 複数ファイルを選択/ドロップしてください。各ファイルが独立したコードブロックになります。', 'info');
+        }
+        
+        init();
+    })();
+</script>
+</body>
+</html>
